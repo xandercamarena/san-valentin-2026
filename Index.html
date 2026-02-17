@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eternidad Romántica</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Cinzel:wght@400;700;900&family=Lora:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0a0101;
+            --accent-gold: #f3d99d;
+            --rose-gold: #eeb4b4;
+            --deep-red: #350606;
+            --glass: rgba(15, 5, 5, 0.95);
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(circle at 20% 30%, #2a0808 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, #1e0505 0%, transparent 40%);
+            color: #f8f1f1;
+            font-family: 'Lora', serif;
+            overflow: hidden;
+            height: 100vh;
+            margin: 0;
+            user-select: none;
+        }
+
+        .font-cursive { font-family: 'Great Vibes', cursive; }
+        .font-classic { font-family: 'Cinzel', serif; }
+
+        /* Capas de atmósfera */
+        .ambient-glow {
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle at var(--x, 50%) var(--y, 50%), rgba(238, 180, 180, 0.08) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .vignette {
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle, transparent 20%, rgba(0,0,0,0.95) 100%);
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        .petal {
+            position: fixed;
+            pointer-events: none;
+            z-index: 2;
+            opacity: 0.6;
+            filter: blur(0.3px);
+        }
+
+        /* Texto y Títulos */
+        .gold-text {
+            background: linear-gradient(to right, #f3d99d, #eeb4b4, #f3d99d);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 8px rgba(243, 217, 157, 0.3));
+            background-size: 200% auto;
+            animation: shine 10s linear infinite;
+        }
+
+        @keyframes shine { to { background-position: 200% center; } }
+
+        /* Navegación de Vistas */
+        .view {
+            position: absolute;
+            inset: 0;
+            display: none; 
+            opacity: 0;
+            transition: opacity 2.5s cubic-bezier(0.4, 0, 0.2, 1), transform 2.5s cubic-bezier(0.4, 0, 0.2, 1), filter 2.5s ease;
+            padding: 40px;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+            filter: blur(10px);
+            transform: scale(1.05);
+        }
+
+        .view.active { 
+            display: flex; 
+            opacity: 1; 
+            filter: blur(0);
+            transform: scale(1); 
+        }
+
+        .view.exit { 
+            opacity: 0; 
+            filter: blur(10px);
+            transform: scale(0.95);
+            pointer-events: none; 
+        }
+
+        /* Tarjeta de Diseño "Pergamino de Cristal" */
+        .romance-card {
+            background: var(--glass);
+            backdrop-filter: blur(50px);
+            border: 1px solid rgba(243, 217, 157, 0.12);
+            padding: 60px;
+            max-width: 950px;
+            width: 100%;
+            border-radius: 2px;
+            box-shadow: 0 50px 150px rgba(0,0,0,0.9);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Botones y Elementos Interactivos */
+        .btn-romance {
+            font-family: 'Cinzel', serif;
+            color: var(--rose-gold);
+            padding: 16px 40px;
+            background: rgba(238, 180, 180, 0.03);
+            border: 1px solid rgba(238, 180, 180, 0.2);
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            font-size: 0.6rem;
+            cursor: pointer;
+            transition: all 0.8s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-romance:hover {
+            background: rgba(238, 180, 180, 0.15);
+            border-color: var(--rose-gold);
+            box-shadow: 0 0 40px rgba(238, 180, 180, 0.15);
+            color: #fff;
+            letter-spacing: 7px;
+        }
+
+        .nav-item {
+            position: relative;
+            padding: 20px;
+            transition: all 0.6s ease;
+        }
+
+        .romantic-icon {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            opacity: 0.4;
+            filter: grayscale(100%) brightness(1.5);
+            transition: all 1s cubic-bezier(0.19, 1, 0.22, 1);
+        }
+
+        .nav-item:hover .romantic-icon {
+            opacity: 1;
+            filter: grayscale(0%) drop-shadow(0 0 15px var(--rose-gold));
+            transform: scale(1.15) translateY(-8px);
+        }
+
+        /* Escalera de Recuerdos Estilos */
+        .staircase-container {
+            height: 80vh;
+            overflow-y: auto;
+            scroll-behavior: smooth;
+            padding-right: 15px;
+            mask-image: linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%);
+        }
+
+        .staircase-container::-webkit-scrollbar {
+            width: 3px;
+        }
+        .staircase-container::-webkit-scrollbar-thumb {
+            background: var(--rose-gold);
+            border-radius: 10px;
+        }
+
+        .staircase-item {
+            display: flex;
+            align-items: center;
+            gap: 40px;
+            margin-bottom: 150px;
+            opacity: 0.3;
+            transform: translateY(50px);
+            transition: all 1.2s ease;
+        }
+
+        .staircase-item.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .memory-photo {
+            width: 350px;
+            height: 450px;
+            object-cover: cover;
+            border: 1px solid rgba(243, 217, 157, 0.2);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            transition: transform 1s ease;
+        }
+
+        .staircase-item:hover .memory-photo {
+            transform: scale(1.02) rotate(1deg);
+        }
+
+        /* Magic Response Styling */
+        #magic-overlay {
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle at center, #1a0202 0%, #000 100%);
+            z-index: 1000;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 4s ease;
+        }
+
+        .sacred-heart-magic {
+            font-size: 160px;
+            filter: drop-shadow(0 0 60px #ff0040);
+            animation: heartPulse 3s infinite ease-in-out;
+            cursor: pointer;
+        }
+
+        @keyframes heartPulse {
+            0%, 100% { transform: scale(1); filter: drop-shadow(0 0 40px #ff0040); }
+            50% { transform: scale(1.08); filter: drop-shadow(0 0 80px #ff2b5f); }
+        }
+
+        #music-tag {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            z-index: 100;
+            font-family: 'Cinzel', serif;
+            font-size: 7px;
+            letter-spacing: 5px;
+            color: var(--rose-gold);
+            opacity: 0.3;
+            writing-mode: vertical-lr;
+            transform: rotate(180deg);
+        }
+    </style>
+</head>
+<body onmousemove="handleView(event)" onclick="initAudio()">
+
+    <audio id="bg-music" loop>
+        <source src="Musica/Found.mp3" type="audio/mpeg">
+    </audio>
+
+    <div class="ambient-glow" id="mouse-glow"></div>
+    <div class="vignette"></div>
+    <div id="petal-container"></div>
+    <div id="music-tag">PENSAMIENTOS DEL ALMA</div>
+
+    <!-- VISTA 1: ENTRADA -->
+    <section id="view-home" class="view active">
+        <div class="text-center z-20">
+            <h2 class="font-classic text-[9px] tracking-[25px] uppercase text-white/20 mb-12">Un viaje al centro de mi corazón</h2>
+            <div class="relative inline-block mb-12 group cursor-pointer" onclick="switchView('menu')">
+                <div class="absolute inset-0 bg-rose-300 rounded-full blur-[120px] opacity-10 group-hover:opacity-25 transition-all duration-[5s]"></div>
+                <div class="text-[160px] leading-none transition-transform duration-[8s] group-hover:rotate-12 group-hover:scale-110">🥀</div>
+            </div>
+            <h1 class="font-cursive text-[9rem] gold-text leading-tight">Mi Amor</h1>
+            <p class="font-classic italic text-xl text-white/30 tracking-[15px] mt-6">Toca para escuchar mi corazón</p>
+        </div>
+    </section>
+
+    <!-- VISTA 2: EL SANTUARIO -->
+    <section id="view-menu" class="view">
+        <div class="romance-card text-center">
+            <div class="mb-20">
+                <h2 class="font-classic text-4xl gold-text tracking-[15px] uppercase">Tu eres mi lugar seguro</h2>
+                <div class="w-24 h-[1px] bg-rose-200/20 mx-auto mt-6"></div>
+            </div>
+            
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-12">
+                <div onclick="switchView('carta')" class="nav-item cursor-pointer group">
+                    <div class="romantic-icon">💌</div>
+                    <h3 class="font-classic text-[10px] tracking-[4px] text-rose-100/40 group-hover:text-rose-100 transition-colors">ME TIENES SUSPIRANDO DE AMOR POR TÍ</h3>
+                </div>
+                <div onclick="switchView('galeria')" class="nav-item cursor-pointer group">
+                    <div class="romantic-icon">🗝️</div>
+                    <h3 class="font-classic text-[10px] tracking-[4px] text-rose-100/40 group-hover:text-rose-100 transition-colors">LA LLAVE A MI RECUERDO MAS HERMOSO</h3>
+                </div>
+                <div onclick="switchView('fechas')" class="nav-item cursor-pointer group">
+                    <div class="romantic-icon">💍</div>
+                    <h3 class="font-classic text-[10px] tracking-[4px] text-rose-100/40 group-hover:text-rose-100 transition-colors">MIS PROMESAS</h3>
+                </div>
+                <div onclick="switchView('promesas')" class="nav-item cursor-pointer group">
+                    <div class="romantic-icon">♾️</div>
+                    <h3 class="font-classic text-[10px] tracking-[4px] text-rose-100/40 group-hover:text-rose-100 transition-colors">MIS VOTOS</h3>
+                </div>
+            </div>
+
+            <div class="mt-20 flex flex-col items-center gap-10">
+                <div onclick="switchView('staircase')" class="group cursor-pointer inline-flex flex-col items-center">
+                    <div class="text-4xl mb-4 opacity-50 transition-all group-hover:opacity-100 group-hover:scale-125 duration-700">🧗‍♂️</div>
+                    <p class="font-classic text-[9px] tracking-[10px] text-rose-200/30 group-hover:text-rose-200/60 uppercase">Nuestros Recuerdos más Hermosos</p>
+                </div>
+
+                <div onclick="switchView('oracle')" class="group cursor-pointer inline-flex flex-col items-center">
+                    <div class="text-4xl mb-4 opacity-50 transition-all group-hover:opacity-100 group-hover:scale-125 duration-700">📜</div>
+                    <p class="font-classic text-[9px] tracking-[10px] text-rose-200/30 group-hover:text-rose-200/60 uppercase">La Carta que guarda mi corazón🥺</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- VISTA 3: CARTA -->
+    <section id="view-carta" class="view">
+        <div class="romance-card !max-w-3xl !p-20">
+            <h2 class="font-cursive text-8xl mb-12 gold-text text-center">Mi Licenciada hermosa...</h2>
+            <div class="font-serif text-2xl italic leading-[2] text-white/90 text-center">
+                <p id="type-text" class="px-10"></p>
+            </div>
+            <div class="mt-20 text-center">
+                <button class="btn-romance" onclick="switchView('menu')">Guardar en tu corazón</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- VISTA 4: FECHAS -->
+    <section id="view-fechas" class="view">
+        <div class="romance-card !max-w-2xl">
+            <h2 class="font-classic text-3xl gold-text mb-16 tracking-[12px] text-center uppercase">PROMETO HACERTE TAN FELIZ MI AMOR🥺</h2>
+            <div class="space-y-12">
+                <div class="flex items-center gap-10 group">
+                    <span class="font-classic text-gold/30 text-xl group-hover:text-gold transition-colors">I</span>
+                    <p class="text-lg italic text-white/50 group-hover:text-white/80 transition-colors border-l border-white/10 pl-8">Aquel instante en que el universo conspiró para que nuestras almas se reconocieran.</p>
+                </div>
+                <div class="flex items-center gap-10 group">
+                    <span class="font-classic text-gold/30 text-xl group-hover:text-gold transition-colors">II</span>
+                    <p class="text-lg italic text-white/50 group-hover:text-white/80 transition-colors border-l border-white/10 pl-8">Nuestra primera danza entre silencios y miradas que lo dijeron todo sin hablar.</p>
+                </div>
+                <div class="flex items-center gap-10 group">
+                    <span class="font-classic text-gold/30 text-xl group-hover:text-gold transition-colors">III</span>
+                    <p class="text-lg italic text-white/50 group-hover:text-white/80 transition-colors border-l border-white/10 pl-8">La promesa sagrada de que cada amanecer a tu lado sea completamente magico.</p>
+                </div>
+            </div>
+            <button class="btn-romance mt-20 w-full" onclick="switchView('menu')">Regresar</button>
+        </div>
+    </section>
+
+    <!-- VISTA 5: PROMESAS -->
+    <section id="view-promesas" class="view">
+        <div class="romance-card text-center !p-20">
+            <h2 class="font-cursive text-7xl gold-text mb-12">Pactos a la mi corazón</h2>
+            <div class="space-y-10 font-serif italic text-2xl text-rose-100/70">
+                <p>"Juro ser el faro que guíe tus noches y la calma que apacigüe tus tormentas."</p>
+                <p>"Prometo amarte con la intensidad de mil soles y la ternura de una luna clara."</p>
+                <p>"Caminaré contigo hasta donde el tiempo pierda su nombre."</p>
+            </div>
+            <button class="btn-romance mt-20" onclick="switchView('menu')">Sellado</button>
+        </div>
+    </section>
+
+    <!-- VISTA 6: ESCALERA DE RECUERDOS -->
+<section id="view-staircase" class="view">
+    <div class="romance-card !max-w-6xl flex flex-col items-center">
+        
+        <h2 class="font-classic text-4xl gold-text mb-12 tracking-[15px] uppercase">
+            Mis recuerdos mas hermosos son a tu lado mi amor
+        </h2>
+        
+        <div class="staircase-container w-full" id="staircase">
+
+            <!-- Cumpleaños -->
+            <div class="staircase-item">
+                <img src="Imagenes/Mi chinita.png" class="memory-photo w-64 h-auto rounded-xl shadow-lg" alt="Su Cumpleaños">
+                <div class="text-left space-y-4">
+                    <span class="font-classic text-rose-300/40 text-xs tracking-widest">
+                        EL INICIO DE TU LUZ
+                    </span>
+                    <h4 class="font-cursive text-5xl gold-text">
+                        Tu Cumpleaños
+                    </h4>
+                    <p class="italic text-white/60">
+                        El día que el mundo se hizo más bello solo porque tú llegaste a él.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Halloween -->
+            <div class="staircase-item flex-row-reverse">
+                <img src="Imagenes/mi caperucita.jpg" class="memory-photo w-64 h-auto rounded-xl shadow-lg" alt="Halloween">
+                <div class="text-right space-y-4">
+                    <span class="font-classic text-rose-200/40 text-xs tracking-widest">
+                        MISTERIO Y DULZURA
+                    </span>
+                    <h4 class="font-cursive text-5xl gold-text">
+                        Nuestro Primer Halloween
+                    </h4>
+                    <p class="italic text-white/60">
+                        Bajo las sombras y disfraces, nuestras almas fueron las únicas que se vieron de verdad.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Año Nuevo -->
+            <div class="staircase-item">
+                <img src="Imagenes/Año nuevo.jpeg" class="memory-photo w-64 h-auto rounded-xl shadow-lg" alt="Año Nuevo">
+                <div class="text-left space-y-4">
+                    <span class="font-classic text-rose-300/40 text-xs tracking-widest">
+                        NUEVOS HORIZONTES
+                    </span>
+                    <h4 class="font-cursive text-5xl gold-text">
+                        Primer Año Nuevo juntos
+                    </h4>
+                    <p class="italic text-white/60">
+                        Mientras los fuegos artificiales estallaban, mi único deseo fue que nunca se acabara este "nosotros".
+                    </p>
+                </div>
+            </div>
+
+            <!-- San Valentín -->
+            <div class="staircase-item flex-row-reverse">
+                <img src="Imagenes/San Valentin.jpeg" class="memory-photo w-64 h-auto rounded-xl shadow-lg" alt="San Valentín">
+                <div class="text-right space-y-4">
+                    <span class="font-classic text-rose-300/40 text-xs tracking-widest">
+                        Nuestro es mas fuerte que todo
+                    </span>
+                    <h4 class="font-cursive text-5xl gold-text">
+                        Primer San Valentín
+                    </h4>
+                    <p class="italic text-white/60">
+                        El día que nuestros corazones se detuvieron para admirar nuestra propia historia.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Nuestra Navidad Juntos -->
+            <div class="staircase-item">
+                <img src="Imagenes/Navidad.jpeg" class="memory-photo w-64 h-auto rounded-xl shadow-lg" alt="Nuestra Navidad Juntos">
+                <div class="text-left space-y-4">
+                    <span class="font-classic text-rose-300/40 text-xs tracking-widest">
+                        CAMINANDO DE LA MANO
+                    </span>
+                    <h4 class="font-cursive text-5xl gold-text">
+                        Nuestra Vida Juntos
+                    </h4>
+                    <p class="italic text-white/60">
+                        No es solo un recuerdo… es cada día que elegimos amarnos, apoyarnos y crecer juntos. 
+                        Nuestro presente es mi parte favorita de la historia.
+                    </p>
+                </div>
+            </div>
+
+        </div>
+
+        <button class="btn-romance mt-10" onclick="switchView('menu')">
+            Volver a mis recuerdos hermosos 
+        </button>
+
+    </div>
+</section>
+
+    <!-- VISTA 7: GALERÍA -->
+    <section id="view-galeria" class="view">
+        <div class="flex flex-col items-center">
+            <h2 class="font-classic text-5xl gold-text mb-20 tracking-[15px] uppercase">MI Relicario</h2>
+            <div class="flex gap-12 flex-wrap justify-center px-10">
+                <div class="relative group">
+                    <div class="absolute -inset-1 bg-rose-400/20 blur opacity-0 group-hover:opacity-100 transition duration-1000"></div>
+                    <img src="Imagenes/Mi felicidad.jpeg" class="relative w-64 h-80 object-cover border border-white/5 grayscale group-hover:grayscale-0 transition-all duration-[2s]">
+                </div>
+                <div class="relative group translate-y-12">
+                    <div class="absolute -inset-1 bg-rose-400/20 blur opacity-0 group-hover:opacity-100 transition duration-1000"></div>
+                    <img src="Imagenes/MI todo.jpeg" class="relative w-64 h-80 object-cover border border-white/5 grayscale group-hover:grayscale-0 transition-all duration-[2s]">
+                </div>
+            </div>
+            <button class="btn-romance mt-32" onclick="switchView('menu')">Cerrar</button>
+        </div>
+    </section>
+
+    <!-- VISTA 8: EL ORÁCULO -->
+    <section id="view-oracle" class="view">
+        <div class="romance-card flex flex-col md:flex-row gap-16 items-center !max-w-5xl !p-16">
+            <div class="w-full md:w-1/2 group">
+                <div class="relative bg-black aspect-[3/4] overflow-hidden border border-white/10 shadow-[0_0_50px_rgba(0,0,0,1)] ring-1 ring-white/5">
+                    <img src="Imagenes/Carta.jpeg" alt="Foto de la Carta" class="w-full h-full object-cover opacity-60 group-hover:opacity-90 transition-opacity duration-[3s] grayscale-[0.5] group-hover:grayscale-0">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
+                    <div class="absolute bottom-6 left-6">
+                        <p class="font-classic text-[10px] tracking-[6px] text-rose-200/50 uppercase">Fragmento de nuestra historia</p>
+                    </div>
+                </div>
+            </div>
+            <div class="w-full md:w-1/2 text-center md:text-left space-y-8">
+                <h2 class="font-classic text-3xl gold-text tracking-[8px] uppercase">TE AMO MI AMOR</h2>
+                <div class="font-serif italic text-xl text-white/60 leading-relaxed border-l-2 border-rose-400/20 pl-8">
+                    <p>"Quiero cuidar de tí, quiero que cuides de mí, quiero que cuidemos lo nuestro🥺✨💗"</p>
+                </div>
+                <div class="pt-12 flex flex-col items-center md:items-start gap-8">
+                    <button class="btn-romance" onclick="triggerMagic()">Revelar la Magia</button>
+                    <button class="font-classic text-[9px] tracking-[5px] opacity-20 hover:opacity-100 hover:text-rose-200 uppercase transition-all duration-700" onclick="switchView('menu')">Volver al Centro</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- OVERLAY MÁGICO -->
+    <div id="magic-overlay">
+        <div id="stars-container" class="absolute inset-0"></div>
+        <div class="sacred-heart-magic" onclick="closeMagic()">❤️</div>
+        <h2 id="magic-msg-1" class="magic-text">Tú eres mi eternidad...</h2>
+        <h3 id="magic-msg-2" class="font-classic text-xs tracking-[20px] text-white/20 uppercase mt-12">Y mi único destino al que yo quiero ir</h3>
+        <button class="btn-romance mt-24 opacity-0 transition-opacity duration-[2s]" id="btn-back" onclick="closeMagic()">Regresar al presente</button>
+    </div>
+
+    <script>
+        const cardMessage = "Si el universo decidiera apagarse hoy, moriría feliz sabiendo que mis labios conocieron el sabor de tu risa y mis ojos el resplandor de tu alma. No eres una coincidencia, eres el poema que mi corazón llevaba escribiendo desde antes de nacer. Eres mi hogar, mi paz y mi infinito, mi amor no tienes que disculparte por nada, yo sigo a tu lado mi amor, para apoyarte, para ser tu soporte, mi amor, yo nunca dejare que te caigas, yo siempre te hare recordar lo maravillosa que eres amorcito🥹🥹❤️.";
+        let audioInit = false;
+
+        function initAudio() {
+            if (!audioInit) {
+                const audio = document.getElementById('bg-music');
+                audio.play().then(() => {
+                    document.getElementById('music-tag').innerText = "VIBRACIÓN DEL ALMA";
+                }).catch(() => {});
+                audioInit = true;
+            }
+        }
+
+        function handleView(e) {
+            const glow = document.getElementById('mouse-glow');
+            glow.style.setProperty('--x', (e.clientX / window.innerWidth * 100) + '%');
+            glow.style.setProperty('--y', (e.clientY / window.innerHeight * 100) + '%');
+            if(Math.random() > 0.97) spawnPetal(e.clientX, e.clientY);
+        }
+
+        function spawnPetal(x, y) {
+            const p = document.createElement('div');
+            p.className = 'petal';
+            p.innerText = Math.random() > 0.5 ? '🌸' : '✨';
+            p.style.left = x + 'px';
+            p.style.top = y + 'px';
+            p.style.fontSize = (Math.random() * 10 + 10) + 'px';
+            document.getElementById('petal-container').appendChild(p);
+            p.animate([
+                { transform: 'translate(0,0) rotate(0deg) scale(1)', opacity: 0.8 },
+                { transform: `translate(${(Math.random()-0.5)*300}px, 400px) rotate(${Math.random()*720}deg) scale(0)`, opacity: 0 }
+            ], { duration: 5000, easing: 'cubic-bezier(0.1, 0, 0.3, 1)' }).onfinish = () => p.remove();
+        }
+
+        function switchView(id) {
+            const current = document.querySelector('.view.active');
+            const next = document.getElementById('view-' + id);
+            if(current === next) return;
+
+            current.classList.add('exit');
+            setTimeout(() => {
+                current.classList.remove('active', 'exit');
+                current.style.display = 'none';
+                next.style.display = 'flex';
+                next.offsetHeight; 
+                next.classList.add('active');
+                if(id === 'carta') revealCardText();
+                if(id === 'staircase') initStaircase();
+            }, 2500);
+        }
+
+        function revealCardText() {
+            const el = document.getElementById('type-text');
+            el.innerHTML = "";
+            let i = 0;
+            function type() {
+                if (i < cardMessage.length) {
+                    el.innerHTML += cardMessage.charAt(i);
+                    i++;
+                    setTimeout(type, 45);
+                }
+            }
+            type();
+        }
+
+        // Lógica de la Escalera de Recuerdos
+        function initStaircase() {
+            const container = document.getElementById('staircase');
+            const items = document.querySelectorAll('.staircase-item');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, { threshold: 0.3, root: container });
+
+            items.forEach(item => observer.observe(item));
+        }
+
+        function triggerMagic() {
+            const overlay = document.getElementById('magic-overlay');
+            overlay.style.display = 'flex';
+            const container = document.getElementById('stars-container');
+            container.innerHTML = '';
+            for(let i=0; i<150; i++) {
+                const star = document.createElement('div');
+                star.className = 'sparkle';
+                const s = Math.random()*2 + 1;
+                star.style.width = s + 'px';
+                star.style.height = s + 'px';
+                star.style.left = Math.random()*100+'%';
+                star.style.top = Math.random()*100+'%';
+                container.appendChild(star);
+                star.animate([{opacity: 0, transform: 'scale(0)'}, {opacity: Math.random(), transform: 'scale(1)'}, {opacity: 0, transform: 'scale(0)'}], {
+                    duration: 2000 + Math.random()*4000,
+                    iterations: Infinity,
+                    delay: Math.random()*5000
+                });
+            }
+            setTimeout(() => {
+                overlay.style.opacity = '1';
+                setTimeout(() => {
+                    document.getElementById('magic-msg-1').style.opacity = '1';
+                    document.getElementById('magic-msg-1').style.transform = 'translateY(0)';
+                }, 2000);
+                setTimeout(() => {
+                    document.getElementById('magic-msg-2').style.opacity = '1';
+                    document.getElementById('magic-msg-2').style.transform = 'translateY(0)';
+                }, 4500);
+                setTimeout(() => {
+                    document.getElementById('btn-back').style.opacity = '1';
+                }, 7500);
+            }, 100);
+        }
+
+        function closeMagic() {
+            const overlay = document.getElementById('magic-overlay');
+            overlay.style.opacity = '0';
+            setTimeout(() => {
+                overlay.style.display = 'none';
+                document.getElementById('magic-msg-1').style.opacity = '0';
+                document.getElementById('magic-msg-2').style.opacity = '0';
+                document.getElementById('btn-back').style.opacity = '0';
+            }, 4000);
+        }
+
+        setInterval(() => spawnPetal(Math.random()*window.innerWidth, -50), 2500);
+    </script>
+</body>
+</html>
